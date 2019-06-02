@@ -4,6 +4,7 @@ import styled from 'styled-components'
 import Header from '../containers/Header'
 import TransactionList from '../containers/TransactionList'
 import Filter from '../containers/Filter'
+import RestoreBackup from './RestoreBackup'
 import DetailsPanel from '../containers/DetailsPanel'
 import BulkActions from '../containers/BulkActions'
 
@@ -45,6 +46,7 @@ export default class TransactionsView extends Component {
         <Body>
           <Menu>
             <Filter />
+            <RestoreBackup />
             <StyledBulkActions />
           </Menu>
           <Content>
