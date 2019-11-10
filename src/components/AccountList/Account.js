@@ -1,5 +1,4 @@
 import React from 'react'
-import { connect } from 'react-redux'
 import styled from 'styled-components'
 import { formatMoney } from 'helpers/format'
 
@@ -29,26 +28,13 @@ const Amount = styled.div`
   text-align: right;
 `
 
-class Account extends React.Component {
-  render() {
-    const { title, balance, instrument, className } = this.props
-    const formattedBalance = formatMoney(balance, instrument.shortTitle)
-    return (
-      <Body className={className} onClick={() => console.log(this.props)}>
-        <Title title={title}>{title}</Title>
-        <Amount>{formattedBalance}</Amount>
-      </Body>
-    )
-  }
+export default function Account(props) {
+  const { title, balance, currency, className } = props
+  const formattedBalance = formatMoney(balance, currency)
+  return (
+    <Body className={className} onClick={() => console.log(props)}>
+      <Title title={title}>{title}</Title>
+      <Amount>{formattedBalance}</Amount>
+    </Body>
+  )
 }
-
-const mapStateToProps = (state, props) => ({
-  // ...getPopulatedAccount(state, props.id)
-})
-
-const mapDispatchToProps = (dispatch, props) => ({})
-
-export default connect(
-  mapStateToProps,
-  mapDispatchToProps
-)(Account)
