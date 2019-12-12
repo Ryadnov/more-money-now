@@ -1,51 +1,25 @@
-// import { getRootUser } from 'store/data/users'
-// import slice from './slice'
-// import selectors from './selectors'
-// import getMonths from 'scenes/Budgets/selectors/budgetViewSelector'
-// import { getPopulatedTag } from '../tags'
-// const { setBudget } = slice.actions
+import { getRootUser } from 'store/data/users'
+import { setBudget } from './index'
+import { goalBudgetDate } from './constants'
+import { createGoal, createBudget } from './helpers'
+import sendEvent from 'helpers/sendEvent'
 
-// export const setOutcomeBudget = (targetOutcome, monthDate, tagId) => (
-//   dispatch,
-//   getState
-// ) => {
-//   const state = getState()
-//   const created = selectors.getBudget(state, tagId, monthDate)
-//   const months = getMonths(state)
-//   const user = getRootUser(state).id
-//   const parentTagId = getPopulatedTag(state, tagId).parent
-//   const month = months.find(({ date }) => +date === +monthDate)
+export const setGoal = ({ type, amount, date, tag }) => (
+  dispatch,
+  getState
+) => {
+  sendEvent(`Goals: set ${type} goal`)
+  const state = getState()
+  const user = getRootUser(state).id
+  const goal = createGoal({ user, tag, type, amount, date })
+  dispatch(setBudget(goal))
+}
 
-//   let outcome = targetOutcome
+export const deleteGoal = tag => (dispatch, getState) => {
+  const state = getState()
+  const user = getRootUser(state).id
 
-//   if (!parentTagId) {
-//     // if it's top level category
-//     const { budgeted, totalBudgeted } = month.tags.find(
-//       ({ id }) => id === tagId
-//     )
-//     const childrenBudgets = totalBudgeted - budgeted
-//     outcome = targetOutcome - childrenBudgets
-//   }
-
-//   const budget = created || createBudget({ user, date: +monthDate, tag: tagId })
-//   const changed = { ...budget, outcome, changed: Date.now() }
-//   dispatch(setBudget(changed))
-// }
-
-// function createBudget(b) {
-//   return {
-//     // required
-//     user: b.user,
-//     date: b.date,
-//     tag: b.tag,
-
-//     // optional
-//     changed: b.changed || Date.now(),
-//     income: b.income || 0,
-//     incomeLock: b.incomeLock || false,
-//     outcome: b.outcome || 0,
-//     outcomeLock: b.outcomeLock || false,
-//   }
-// }
-
-// export default { setOutcomeBudget }
+  // create empty goal budget
+  const typeBudget = createBudget({ user, tag, date: goalBudgetDate })
+  dispatch(setBudget(typeBudget))
+}

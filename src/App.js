@@ -1,5 +1,5 @@
 import React from 'react'
-import { BrowserRouter, Route, Redirect, Switch } from 'react-router-dom'
+import { Router, Route, Redirect, Switch } from 'react-router-dom'
 import { connect } from 'react-redux'
 import { IntlProvider, addLocaleData } from 'react-intl'
 import ru from 'react-intl/locale-data/ru'
@@ -19,20 +19,33 @@ import { getTheme } from 'store/theme'
 import { MuiPickersUtilsProvider } from '@material-ui/pickers'
 import DateFnsUtils from '@date-io/date-fns'
 import ruDateLocale from 'date-fns/locale/ru'
+import { createBrowserHistory } from 'history'
+import reactGA from 'react-ga'
+import ErrorBoundary from 'components/ErrorBoundary'
 
 addLocaleData(ru)
+reactGA.initialize('UA-72832368-2')
+
+const history = createBrowserHistory()
+
+history.listen(location => {
+  reactGA.set({ page: location.pathname }) // Update the user's current page
+  reactGA.pageview(location.pathname) // Record a pageview for the given page
+})
 
 const App = ({ isLoggedIn, themeType }) => (
   <ThemeProvider theme={createTheme(themeType)}>
     <>
       <CssBaseline />
-      <IntlProvider locale="ru">
-        <MuiPickersUtilsProvider utils={DateFnsUtils} locale={ruDateLocale}>
-          <BrowserRouter>
-            {isLoggedIn ? <PrivateApp /> : <Auth />}
-          </BrowserRouter>
-        </MuiPickersUtilsProvider>
-      </IntlProvider>
+      <ErrorBoundary>
+        <IntlProvider locale="ru">
+          <MuiPickersUtilsProvider utils={DateFnsUtils} locale={ruDateLocale}>
+            <Router history={history}>
+              {isLoggedIn ? <PrivateApp /> : <Auth />}
+            </Router>
+          </MuiPickersUtilsProvider>
+        </IntlProvider>
+      </ErrorBoundary>
     </>
   </ThemeProvider>
 )
@@ -48,12 +61,14 @@ const PrivateApp = () => (
     <SnackbarHandler />
     <RegularSyncHandler />
     <Box height="100vh" overflow="auto" flexGrow={1}>
-      <Switch>
-        <Route path="/transactions" component={Transactions} />
-        <Route path="/tags" component={Tags} />
-        <Route path="/budget" component={Budgets} />
-        <Redirect to="/transactions" />
-      </Switch>
+      <ErrorBoundary>
+        <Switch>
+          <Route path="/transactions" component={Transactions} />
+          <Route path="/tags" component={Tags} />
+          <Route path="/budget" component={Budgets} />
+          <Redirect to="/budget" />
+        </Switch>
+      </ErrorBoundary>
     </Box>
   </Box>
 )

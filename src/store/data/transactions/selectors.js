@@ -4,7 +4,7 @@ import { getPopulatedAccounts } from 'store/data/accounts'
 import { getPopulatedTags } from 'store/data/tags'
 import { getMerchants } from 'store/data/merchants'
 import { groupTransactionsBy, sortBy } from './helpers'
-import { getFilterConditions, check } from 'store/filterConditions'
+import { getFilterConditions, check, checkRaw } from 'store/filterConditions'
 import { convertToSyncArray } from 'helpers/converters'
 import { populate } from './populate'
 
@@ -60,6 +60,11 @@ const getOpenedTransaction = createSelector(
   (transactions, openedId) => transactions[openedId]
 )
 
+const getSortedTransactions = createSelector(
+  [getTransactions],
+  transactions => Object.values(transactions).sort(sortBy())
+)
+
 const getTransactionList = (state, options = {}) => {
   const { ids, conditions, groupBy, sortType, ascending } = options
   const transactions = getPopulatedTransactions(state)
@@ -75,10 +80,10 @@ const getTransactionList = (state, options = {}) => {
 }
 
 const getMainTransactionList = createSelector(
-  [getPopulatedTransactions, getFilterConditions],
+  [getTransactions, getFilterConditions],
   (transactions, filterConditions) => {
     const list = Object.values(transactions)
-      .filter(check(filterConditions))
+      .filter(checkRaw(filterConditions))
       .sort(sortBy())
     return groupTransactionsBy('DAY', list)
   }
@@ -93,5 +98,6 @@ export default {
   getPopulatedTransaction,
   getOpenedTransaction,
   getTransactionList,
+  getSortedTransactions,
   getMainTransactionList,
 }

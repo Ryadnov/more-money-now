@@ -26,9 +26,9 @@ const { reducer, actions } = createSlice({
         diff[payload.id] = payload
       }
     },
-    removeTransaction: ({ diff }, { payload }) => {
-      delete diff[payload]
-    },
+    // removeTransaction: ({ diff }, { payload }) => {
+    //   delete diff[payload]
+    // },
   },
   extraReducers: {
     [wipeData]: () => initialState,
@@ -58,6 +58,7 @@ export const {
   getPopulatedTransaction,
   getOpenedTransaction,
   getTransactionList,
+  getSortedTransactions,
   getMainTransactionList,
 } = selectors
 

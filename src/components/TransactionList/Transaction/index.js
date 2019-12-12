@@ -8,9 +8,9 @@ import {
   ListItemAvatar,
   ListItemText,
 } from '@material-ui/core'
+import EmojiIcon from 'components/EmojiIcon'
 import { MainLine } from './MainLine'
 import { Amount } from './Amount'
-import Icon from './Icon'
 
 const useStyles = makeStyles(theme => ({
   listItem: { borderRadius: theme.shape.borderRadius },
@@ -44,6 +44,7 @@ export default function Transaction({
   payee,
   tag,
   comment,
+  qrCode,
 
   income,
   incomeCurrency,
@@ -66,7 +67,7 @@ export default function Transaction({
   const handleSelectSimilar = () => onSelectChanged(changed)
 
   const symbol = tag ? tag[0].symbol : type === 'transfer' ? '→' : '?'
-  const color = tag ? tag[0].color : null
+  const color = tag ? tag[0].colorRGB : null
   const mainAccountTitle =
     type === 'income'
       ? incomeAccountTitle
@@ -83,14 +84,13 @@ export default function Transaction({
       onDoubleClick={handleSelectSimilar}
     >
       <ListItemAvatar>
-        <Icon
-          {...{
-            isChecked,
-            isInSelectionMode,
-            symbol,
-            onToggle,
-            color,
-          }}
+        <EmojiIcon
+          symbol={symbol}
+          showCheckBox={isInSelectionMode}
+          checked={isChecked}
+          onChange={onToggle}
+          color={color}
+          size="m"
         />
       </ListItemAvatar>
       <ListItemText
@@ -123,6 +123,7 @@ export default function Transaction({
               color="textSecondary"
             >
               {deleted && <DeletedLabel />}
+              {qrCode && <QRLabel />}
               {payee && (
                 <Typography
                   noWrap
@@ -150,6 +151,18 @@ export default function Transaction({
         }
       />
     </ListItem>
+  )
+}
+
+const QRLabel = () => {
+  const Label = withStyles(theme => ({
+    root: { marginRight: theme.spacing(1) },
+  }))(Typography)
+  return (
+    // eslint-disable-next-line jsx-a11y/accessible-emoji
+    <Label variant="body2" component="span" role="img" aria-label="чек">
+      🧾
+    </Label>
   )
 }
 

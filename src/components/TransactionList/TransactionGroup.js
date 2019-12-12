@@ -1,36 +1,35 @@
 import React from 'react'
 import { withStyles } from '@material-ui/core/styles'
-import { Box, Paper, ListSubheader } from '@material-ui/core'
+import { Box, ListSubheader } from '@material-ui/core'
 import Transaction from './TransactionContainer'
+import formatDate from './formatDate'
 
 export default function TransactionGroup({
   style,
-  name,
+  date,
   transactions,
   topOffset = 0,
   opened,
   setOpened,
+  onSelectDate,
 }) {
-  const StyledSubheader = withStyles({ sticky: { top: topOffset } })(
-    ListSubheader
-  )
+  const StyledSubheader = withStyles(theme => ({
+    root: { backgroundColor: theme.palette.background.paper },
+    sticky: { top: topOffset },
+  }))(ListSubheader)
 
   return (
-    <Box px={2} style={style}>
-      <Box
-        position="relative"
-        maxWidth={560}
-        mx="auto"
-        py={1}
-        component={Paper}
-      >
-        <StyledSubheader>{name}</StyledSubheader>
-        {transactions.map(tr => (
+    <Box style={style}>
+      <Box position="relative" maxWidth={560} mx="auto">
+        <StyledSubheader onClick={() => onSelectDate(date)}>
+          {formatDate(date)}
+        </StyledSubheader>
+        {transactions.map(id => (
           <Transaction
-            key={tr.id}
-            id={tr.id}
-            isOpened={tr.id === opened}
-            onClick={() => setOpened(tr.id)}
+            key={id}
+            id={id}
+            isOpened={id === opened}
+            onClick={() => setOpened && setOpened(id)}
           />
         ))}
       </Box>

@@ -19,13 +19,15 @@ export default function BudgetPopover({
   prevBudgeted,
   prevSpend,
   currency,
+  goal,
+  needForGoal,
   onChange,
   ...rest
 }) {
   const [value, setValue] = React.useState(budgeted)
 
   return (
-    <Popover disableRestoreFocus onClose={() => onChange(+value)} {...rest}>
+    <Popover onClose={() => onChange(+value)} {...rest}>
       <Box p={2} pb={0}>
         <AmountInput
           autoFocus
@@ -51,6 +53,19 @@ export default function BudgetPopover({
       </Box>
 
       <List>
+        {!!goal && !!needForGoal && (
+          <ListItem
+            button
+            selected={+value === +needForGoal}
+            onClick={() => onChange(+needForGoal)}
+          >
+            <ListItemText
+              primary="Цель"
+              secondary={formatMoney(needForGoal, currency)}
+            />
+          </ListItem>
+        )}
+
         {!!prevBudgeted && (
           <ListItem
             button

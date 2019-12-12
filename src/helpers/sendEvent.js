@@ -1,8 +1,19 @@
+import reactGA from 'react-ga'
+
 const YMID = 56072254
 
 export default function sendEvent(event) {
-  if (window.ym) {
-    window.ym(YMID, 'reachGoal', event)
-    console.log('send ', event)
-  }
+  const { ym } = window
+
+  if (!event) return
+  console.log('send', event)
+
+  if (ym) ym(YMID, 'reachGoal', event)
+
+  const eventArr = event.split(': ')
+  reactGA.event({
+    category: eventArr[0],
+    action: eventArr[1] || '-',
+    label: eventArr[2] || '',
+  })
 }

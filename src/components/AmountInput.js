@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, useRef } from 'react'
 import { TextField, InputAdornment } from '@material-ui/core'
 import { getCurrencySymbol } from 'helpers/format'
 
@@ -12,12 +12,17 @@ export default function AmountInput({
   onKeyDown,
   ...rest
 }) {
+  const ref = useRef()
   const [expression, setExpression] = useState(value || '')
   const [focused, setFocused] = useState(false)
 
   useEffect(() => {
     if (!focused) setExpression(value)
   }, [value, focused])
+
+  useEffect(() => {
+    if (focused && ref) ref.current.select()
+  }, [focused])
 
   const sym = currency ? getCurrencySymbol(currency) : null
 
@@ -62,15 +67,19 @@ export default function AmountInput({
       if (onBlur) onBlur(e)
     },
     onKeyDown: e => {
-      if (onEnter && e.keyCode === 13) onEnter(calc(expression))
+      if (onEnter && e.keyCode === 13) {
+        e.preventDefault()
+        onEnter(calc(expression))
+      }
       if (onKeyDown) onKeyDown(e)
     },
   }
 
   return (
     <TextField
-      value={focused ? expression : formattedValue}
+      value={focused ? expression || '' : formattedValue || ''}
       variant="outlined"
+      inputRef={ref}
       inputProps={{ type: 'tel' }}
       InputProps={{
         endAdornment: sym && <InputAdornment position="end" children={sym} />,
